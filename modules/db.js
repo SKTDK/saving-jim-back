@@ -10,7 +10,7 @@ const MongoClient = mongodb.MongoClient
  * Variables
  */
 // Connection URL
-const url = process.env.MONGODB_URI
+const url = process.env.DB_URL
 // Database Name
 const dbName = process.env.DB_DB
 
@@ -21,8 +21,11 @@ const dbName = process.env.DB_DB
  */
 let connect = () => {
     return new Promise((resolve, reject) => {
-        const client = new MongoClient(url, { useUnifiedTopology: true, useNewUrlParser: true })
-        client.connect(function(err) {
+        const client = new MongoClient(url, {
+            useUnifiedTopology: true,
+            useNewUrlParser: true
+        })
+        client.connect(function (err) {
             if (err) {
                 console.error("[Db] Unable to connect to server: " + err.message)
                 reject(err)

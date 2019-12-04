@@ -18,7 +18,7 @@ const quotesRouter = require('../routes/quotes')
 
 // Global variables
 const host = process.env.SERVER_HOST
-const port = process.env.PORT
+const port = process.env.SERVER_PORT
 const app = express()
 
 
@@ -30,7 +30,9 @@ const app = express()
 app.use(loggerMiddleware)
 
 // limit : it controls the maximum request body size. 
-app.use(bodyParser.json({limit:"1.1MB"}));
+app.use(bodyParser.json({
+    limit: "1.1MB"
+}));
 
 // Configure routes
 app.use(authRouter)
@@ -43,7 +45,7 @@ app.use('/quotes', quotesRouter)
 
 // Start server
 var start = function (callback) {
-    app.listen(port,  () => {
+    app.listen(port, () => {
         //console.info(`[Server] Listening on http://${host}:${port}`);
         console.info(`[Server] Listening on ${port}`)
         if (callback) callback(null)

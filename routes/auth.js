@@ -5,7 +5,7 @@
 const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
-const _ =  require('lodash')
+const _ = require('lodash')
 const bcrypt = require('bcrypt')
 const db = require('../modules/db')
 
@@ -25,47 +25,77 @@ const jwtSecret = process.env.JWT_SECRET
  * Routes
  */
 
-router.post("/login", function(req, res, next) {
-    db.db.collection("users").findOne({ login: req.body.login }).then(user => {      
+router.post("/login", function (req, res, next) {
+    console.log(req.body.username);
+    db.db.collection("users").findOne({
+        username: req.body.username
+    }).then(user => {
         if (user) {
-            bcrypt.compare(req.body.password, user.password, function(err, result) {
+            bcrypt.compare(req.body.password, user.password, function (err, result) {
                 if (result) {
                     const exp = Date.now() + 12 * 60 * 60 * 1000; // 12h
-                    jwt.sign({ user: user._id, exp: exp }, jwtSecret, (err, token) => {
+                    jwt.sign({
+                        user: user._id,
+                        exp: exp
+                    }, jwtSecret, (err, token) => {
                         if (err) {
                             console.log(err)
-                            res.status(500).json({ success: false, error: "error during token signing" })
+                            res.status(500).json({
+                                success: false,
+                                error: "error during token signing"
+                            })
                         } else {
                             delete user.password
-                            res.json({ success: true, user, token })
+                            res.json({
+                                success: true,
+                                user,
+                                token
+                            })
                         }
-                    });         
+                    });
                 } else {
-                    res.status(401).json({ success: false, error: "bad email/password" })
+                    res.status(401).json({
+                        success: false,
+                        error: "bad password"
+                    })
                 }
             })
         } else {
-            res.status(401).json({ success: false, error: "bad email/password" })
+            res.status(401).json({
+                success: false,
+                error: "bad username"
+            })
         }
     })
 })
 
-router.post("/register", function(req, res, next) {
+router.post("/register", function (req, res, next) {
     // Check mandatory data
-    if (!req.body.login || !req.body.password) {
-        res.status(412).json({ success: false, error: "Password and login needed" })
+    if (!req.body.username || !req.body.password) {
+        res.status(412).json({
+            success: false,
+            error: "Password and username needed"
+        })
         return
     }
     // Check if user already into DB
-    db.db.collection("users").findOne({ login: req.body.login }).then(user => {      
+    db.db.collection("users").findOne({
+        username: req.body.username
+    }).then(user => {
         if (user) {
-            res.status(409).json({ success: false, error: "login already taken" })
+            res.status(409).json({
+                success: false,
+                error: "login already taken"
+            })
         } else {
             // Hash password
             const user = _.cloneDeep(req.body)
-            bcrypt.hash(user.password, saltRounds, function(err, hash) {
+            bcrypt.hash(user.password, saltRounds, function (err, hash) {
                 if (err) {
-                    res.status(500).json({ success: false, error: "Unable to hash password" })
+                    res.status(500).json({
+                        success: false,
+                        error: "Unable to hash password"
+                    })
                 } else {
                     user.password = hash
                     // Insert user into DB
@@ -74,15 +104,16 @@ router.post("/register", function(req, res, next) {
                         delete user.password
                         res.json(user);
                     }).catch(err => {
-                        res.status(500).json({ success: false, error: "Unable to insert user into DB" })
+                        res.status(500).json({
+                            success: false,
+                            error: "Unable to insert user into DB"
+                        })
                     })
                 }
             });
         }
     })
 })
-
-
 
 /**
  * Exports

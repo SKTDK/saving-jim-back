@@ -26,31 +26,42 @@ const loggerMiddleware = (req, res, next) => {
 /**
  * Authentication
  */
- // Create an authorization middleware to be used on the route to be secured
+// Create an authorization middleware to be used on the route to be secured
 const authMiddleware = (req, res, next) => {
     var token = req.get('authorization')
-    if (!token) {          
-        res.status(401).json({ success: false, error: "A token is mandatory to subscribe to this API." })
+    if (!token) {
+        res.status(401).json({
+            success: false,
+            error: "A token is mandatory to subscribe to this API."
+        })
     } else {
         jwt.verify(token, jwtSecret, (err, decoded) => {
-            if (err) {              
-                res.status(401).json({ success: false, error: "Unable to parse token." })
-            } else if (decoded.exp <= Date.now()) {              
-                res.status(401).json({ success: false, error: "Token has expired." })
+            if (err) {
+                res.status(401).json({
+                    success: false,
+                    error: "Unable to parse token."
+                })
+            } else if (decoded.exp <= Date.now()) {
+                res.status(401).json({
+                    success: false,
+                    error: "Token has expired."
+                })
             } else {
                 db.db
-                .collection("users")
-                .findOne({ _id: new db.ObjectID(decoded.user) })
-                .then(user => {
-                    if (err || !user) {
-                        res.status(500).send(err)
-                    } else {
-                        delete user.password
-                        req.user = user
-                        req.token = decoded
-                        next()
-                    }
-                })
+                    .collection("users")
+                    .findOne({
+                        _id: new db.ObjectID(decoded.user)
+                    })
+                    .then(user => {
+                        if (err || !user) {
+                            res.status(500).send(err)
+                        } else {
+                            delete user.password
+                            req.user = user
+                            req.token = decoded
+                            next()
+                        }
+                    })
             }
         })
     }
