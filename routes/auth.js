@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken')
 const _ = require('lodash')
 const bcrypt = require('bcrypt')
 const db = require('../modules/db')
-
+const config = require('../modules/config')
 
 
 /**
@@ -26,93 +26,72 @@ const jwtSecret = process.env.JWT_SECRET
  */
 
 router.post("/login", function (req, res, next) {
-    console.log(req.body.username);
-    db.db.collection("users").findOne({
-        username: req.body.username
-    }).then(user => {
-        if (user) {
-            bcrypt.compare(req.body.password, user.password, function (err, result) {
-                if (result) {
-                    const exp = Date.now() + 12 * 60 * 60 * 1000; // 12h
-                    jwt.sign({
-                        user: user._id,
-                        exp: exp
-                    }, jwtSecret, (err, token) => {
-                        if (err) {
-                            console.log(err)
-                            res.status(500).json({
-                                success: false,
-                                error: "error during token signing"
-                            })
-                        } else {
-                            delete user.password
-                            res.json({
-                                success: true,
-                                user,
-                                token
-                            })
-                        }
-                    });
-                } else {
-                    res.status(401).json({
-                        success: false,
-                        error: "bad password"
-                    })
-                }
-            })
-        } else {
-            res.status(401).json({
-                success: false,
-                error: "bad username"
-            })
-        }
-    })
-})
 
-router.post("/register", function (req, res, next) {
-    // Check mandatory data
-    if (!req.body.username || !req.body.password) {
+    var username = req.body.username;
+    var password = req.body.password;
+
+    // Checking if data is valid before sending it to remote DB server
+    if (!username || !password) {
         res.status(412).json({
             success: false,
             error: "Password and username needed"
         })
         return
     }
-    // Check if user already into DB
-    db.db.collection("users").findOne({
-        username: req.body.username
-    }).then(user => {
-        if (user) {
-            res.status(409).json({
-                success: false,
-                error: "login already taken"
-            })
-        } else {
-            // Hash password
-            const user = _.cloneDeep(req.body)
-            bcrypt.hash(user.password, saltRounds, function (err, hash) {
-                if (err) {
-                    res.status(500).json({
-                        success: false,
-                        error: "Unable to hash password"
-                    })
-                } else {
-                    user.password = hash
-                    // Insert user into DB
-                    db.db.collection("users").insertOne(user).then(result => {
-                        user._id = result.insertedId
-                        delete user.password
-                        res.json(user);
-                    }).catch(err => {
-                        res.status(500).json({
+
+    // Checking if data is valid before sending it to remote DB server
+    if (!password.match(config.REGEX_PASSWORD) || password.length > config.LEN_PASSWORD || !username.match(config.REGEX_USERNAME) || username.length > config.LEN_USERNAME) {
+        res.status(413).json({
+            success: false,
+            error: "Invalid username/password"
+        })
+        return
+    }
+
+    // Prepared statement
+    // It is a bad practice to use * so we list evrything, so if tables change in the database it does not corrupt the code.
+    db.db.query('SELECT id, account_type, first_name, last_name, login, password, active, modified_on, modified_by, version FROM savingjim.users where login=$1', [username])
+        .then(user => {
+            if (user) {
+                bcrypt.compare(password, user.rows[0].password, function (err, result) {
+                    if (result) {
+                        const exp = Date.now() + 12 * 60 * 60 * 1000; // 12h
+                        jwt.sign({
+                            user: user.rows[0].id,
+                            exp: exp
+                        }, jwtSecret, (err, token) => {
+                            if (err) {
+                                console.log(err)
+                                res.status(500).json({
+                                    success: false,
+                                    error: "error during token signing"
+                                })
+                            } else {
+                                delete user.password
+                                res.status(200).json({
+                                    success: true,
+                                    user,
+                                    token
+                                })
+                            }
+                        });
+                    } else {
+                        res.status(401).json({
                             success: false,
-                            error: "Unable to insert user into DB"
+                            error: "bad password"
                         })
-                    })
-                }
-            });
-        }
-    })
+                    }
+                })
+            } else {
+                res.status(401).json({
+                    success: false,
+                    error: "bad username"
+                })
+            }
+
+        })
+        .catch(e => console.error(e.stack))
+    return;
 })
 
 /**

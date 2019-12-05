@@ -18,11 +18,9 @@ const testRouter = require('../routes/test')
  */
 
 // Global variables
-const host = process.env.SERVER_HOST
-const port = process.env.SERVER_PORT
-const app = express()
-
-
+const host = process.env.SERVER_HOST;
+const port = process.env.SERVER_PORT;
+const app = express();
 
 /**
  * Configuration
