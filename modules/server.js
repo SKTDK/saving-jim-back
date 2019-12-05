@@ -10,7 +10,8 @@ const authRouter = require('../routes/auth')
 const usersRouter = require('../routes/users')
 const galleryRouter = require('../routes/gallery')
 const quotesRouter = require('../routes/quotes')
-
+// TEST PGSQL
+const testRouter = require('../routes/test')
 
 /**
  * Variables
@@ -33,7 +34,8 @@ app.use(loggerMiddleware)
 app.use(bodyParser.json({
     limit: "1.1MB"
 }));
-
+// TEST PGSQL
+app.use('/test', testRouter)
 // Configure routes
 app.use(authRouter)
 // Secure the API
@@ -46,7 +48,6 @@ app.use('/quotes', quotesRouter)
 // Start server
 var start = function (callback) {
     app.listen(port, () => {
-        //console.info(`[Server] Listening on http://${host}:${port}`);
         console.info(`[Server] Listening on ${port}`)
         if (callback) callback(null)
     })
