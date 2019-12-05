@@ -51,13 +51,14 @@ router.post("/login", function (req, res, next) {
     // Prepared statement
     // It is a bad practice to use * so we list evrything, so if tables change in the database it does not corrupt the code.
     db.db.query('SELECT id, account_type, first_name, last_name, login, password, active, modified_on, modified_by, version FROM savingjim.users where login=$1', [username])
-        .then(user => {
+        .then(result => {
+            user = result.rows[0];
             if (user) {
-                bcrypt.compare(password, user.rows[0].password, function (err, result) {
+                bcrypt.compare(password, user.password, function (err, result) {
                     if (result) {
                         const exp = Date.now() + 12 * 60 * 60 * 1000; // 12h
                         jwt.sign({
-                            user: user.rows[0].id,
+                            user: user.id,
                             exp: exp
                         }, jwtSecret, (err, token) => {
                             if (err) {
