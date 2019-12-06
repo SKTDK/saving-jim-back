@@ -2,6 +2,14 @@ DROP SCHEMA IF EXISTS savingjim;
 
 CREATE SCHEMA savingjim;
 
+/* 
+account_type
+0 = admin
+1 = worker
+2 = person_of_contact
+3 = child
+ */
+
 CREATE TABLE IF NOT EXISTS savingjim.users(
     id serial PRIMARY KEY NOT NULL,
     account_type INTEGER NOT NULL,
@@ -16,13 +24,27 @@ CREATE TABLE IF NOT EXISTS savingjim.users(
     FOREIGN KEY (modified_by) REFERENCES savingjim.users (id)
 );
 
+/* 
+dominant_hand
+0 = right-handed
+1 = left-handed
+2 = ambidextrous
+3 = adominant
+
+school
+0 = normal
+1 = specialized
+2 = integration
+*/
 CREATE TABLE IF NOT EXISTS savingjim.children(
     id SERIAL PRIMARY KEY,
     account_id INTEGER,
     birth_date DATE,
     language VARCHAR(30),
     dominant_hand INTEGER,
-    current_school_degree INTEGER,
+    school INTEGER,
+    school_type VARCHAR(60),
+    current_school_degree VARCHAR(60),
     visual_difficulty BOOLEAN,
     no_visual BOOLEAN,
     hearing_difficulty BOOLEAN,
