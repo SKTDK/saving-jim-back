@@ -10,6 +10,7 @@ const authRouter = require('../routes/auth')
 const usersRouter = require('../routes/users')
 const galleryRouter = require('../routes/gallery')
 const quotesRouter = require('../routes/quotes')
+const accountsRouter = require('../routes/accounts')
 // TEST PGSQL
 const testRouter = require('../routes/test')
 
@@ -42,6 +43,7 @@ app.use(authMiddleware)
 app.use('/users', usersRouter)
 app.use('/gallery', galleryRouter)
 app.use('/quotes', quotesRouter)
+app.use('/accounts', accountsRouter)
 
 // Start server
 var start = function (callback) {
