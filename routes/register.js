@@ -25,7 +25,7 @@ const jwtSecret = process.env.JWT_SECRET
  * Routes
  */
 
- /* 
+/* 
 account_type
 0 = admin
 1 = worker
@@ -38,22 +38,29 @@ router.put("/register", function (req, res, next) {
     var account_type = req.body.accountType;
     var first_name = req.body.firstName;
     var last_name = req.body.lastName;
-    var login = req.body.login;
+    var username = req.body.username;
     var password = req.body.password;
 
-    var user = {account_type, first_name, last_name, login, password};
-    //Check for null fields and login-pwd matching regex (see /modules/config.js), sends an error if pblm
-    if(checkUserFields(user, res)){
-        bcrypt.genSalt(process.env.SALT_BCRYPT, function(err, salt){
-            bcrypt.hash(user.password, salt, function(err, hash){
-                db.db.query('INSERT INTO savingjim.users (account_type, first_name, last_name, login, password, active, modified_on, modified_by, version) VALUES ($1, $2, $3, $4, $5, true, NULL, NULL',
-                                [user.account_type, user.first_name, user.last_name, user.login, hash])
-                     .then(res => {
+    var user = {
+        account_type,
+        first_name,
+        last_name,
+        username,
+        password
+    };
+    //Check for null fields and username-pwd matching regex (see /modules/config.js), sends an error if pblm
+    if (checkUserFields(user, res)) {
+        bcrypt.genSalt(process.env.SALT_BCRYPT, function (err, salt) {
+            bcrypt.hash(user.password, salt, function (err, hash) {
+                db.db.query('INSERT INTO savingjim.users (account_type, first_name, last_name, username, password, active, modified_on, modified_by, version) VALUES ($1, $2, $3, $4, $5, true, NULL, NULL',
+                        [user.account_type, user.first_name, user.last_name, user.username, hash])
+                    .then(res => {
                         delete user.password;
                         res.status(200).json({
-                            succes: true, user
+                            succes: true,
+                            user
                         });
-                     });
+                    });
             });
         }).catch(err => console.error(e.stack));
     }
@@ -62,17 +69,17 @@ router.put("/register", function (req, res, next) {
 
 
 
-let checkUserFields = function(user, res){
-    
-    if(!user.password.match(config.REGEX_PASSWORD) || user.password.length > config.LEN_PASSWORD || !user.login.match(config.REGEX_USERNAME) || !user.login.length > config.LEN_USERNAME){
+let checkUserFields = function (user, res) {
+
+    if (!user.password.match(config.REGEX_PASSWORD) || user.password.length > config.LEN_PASSWORD || !user.username.match(config.REGEX_USERNAME) || !user.username.length > config.LEN_USERNAME) {
         res.status(400).json({
             success: false,
-            error: "Login or Password invalid"
+            error: "username or Password invalid"
         })
         return false;
     }
 
-    if(!user.account_type){
+    if (!user.account_type) {
         res.status(400).json({
             success: false,
             error: "Account type requried"
@@ -80,7 +87,7 @@ let checkUserFields = function(user, res){
         return false;
     }
 
-    if(!user.first_name){
+    if (!user.first_name) {
         res.status(400).json({
             success: false,
             error: "First name required"
@@ -88,7 +95,7 @@ let checkUserFields = function(user, res){
         return false;
     }
 
-    if(!user.last_name){
+    if (!user.last_name) {
         res.status(400).json({
             success: false,
             error: "Last name requried"
@@ -96,15 +103,15 @@ let checkUserFields = function(user, res){
         return false;
     }
 
-    if(!user.login){
+    if (!user.username) {
         res.status(400).json({
             success: false,
-            error: "Login requried"
+            error: "username requried"
         })
         return false;
     }
 
-    if(!user.password){
+    if (!user.password) {
         res.status(400).json({
             success: false,
             error: "Password required"
