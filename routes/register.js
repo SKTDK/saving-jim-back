@@ -15,7 +15,7 @@ const config = require('../modules/config')
  * Variables
  */
 
-const saltRounds = process.env.BCRYPT_SALT_ROUNDS || 10
+const saltRounds = process.env.SALT_BCRYPT || 10
 // To use it in Production, don't forget to set-up a new environment variable
 const jwtSecret = process.env.JWT_SECRET
 

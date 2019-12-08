@@ -87,12 +87,12 @@ CREATE TABLE IF NOT EXISTS savingjim.persons_of_contact(
 
 CREATE TABLE IF NOT EXISTS savingjim.workers_to_children(
     id SERIAL PRIMARY KEY,
-    worker_id INTEGER NOT NULL,
+    account_id INTEGER NOT NULL,
     child_id INTEGER NOT NULL,
     modified_by INTEGER,
     modified_on TIMESTAMP,
     version INTEGER,
-    FOREIGN KEY (worker_id) REFERENCES savingjim.users (id),
+    FOREIGN KEY (account_id) REFERENCES savingjim.users (id),
     FOREIGN KEY (child_id) REFERENCES savingjim.users (id),
     FOREIGN KEY (modified_by) REFERENCES savingjim.users (id)
 );
@@ -183,14 +183,14 @@ VALUES (4, 6, 9, '0433445566', 'contact3@gmail.com', 'papa', NULL, NULL, 0);
  * Worker1 id = 2 manages 2 children (id = 7, id = 8)
  * Worker2 id = 3 manages 1 children (id = 9)
  */
-INSERT INTO savingjim.workers_to_children (id, worker, child_id, modified_by, modified_on, version)
+INSERT INTO savingjim.workers_to_children (id, account_id, child_id, modified_by, modified_on, version)
 VALUES (1, 2, 7, NULL, NULL, 0);
 
-INSERT INTO savingjim.workers_to_children (id, worker, child_id, modified_by, modified_on, version)
-VALUES (1, 2, 8, NULL, NULL, 0);
+INSERT INTO savingjim.workers_to_children (id, account_id, child_id, modified_by, modified_on, version)
+VALUES (2, 2, 8, NULL, NULL, 0);
 
-INSERT INTO savingjim.workers_to_children (id, worker, child_id, modified_by, modified_on, version)
-VALUES (1, 3, 9, NULL, NULL, 0);
+INSERT INTO savingjim.workers_to_children (id, account_id, child_id, modified_by, modified_on, version)
+VALUES (3, 3, 9, NULL, NULL, 0);
 
 
 /*
@@ -211,13 +211,13 @@ VALUES (1, 7, '2000-10-9', 'fr', 1, 1, 'Specialise', '6eme secondaire', FALSE, F
 INSERT INTO savingjim.children (id, account_id, birth_date, language, dominant_hand, school, school_type, current_school_degree, visual_difficulty, no_visual, 
 hearing_difficulty, no_hearing, movement_difficulty, md_right, md_left, md_both, no_movement_hands, nmh_right, nmh_left, nmh_both, communication_difficulty, 
 no_communication, hearing_comprehension_difficulty, game_flow_comprehension_difficulty, space_awarness_difficulty, other, modified_by, modified_on, version)
-VALUES (1, 8, '2003-11-15', 'fr', 1, 2, 'Integre', '3eme secondaire', FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, 'Child2', NULL, NULL, 0);
+VALUES (2, 8, '2003-11-15', 'fr', 1, 2, 'Integre', '3eme secondaire', FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, 'Child2', NULL, NULL, 0);
 
 
 INSERT INTO savingjim.children (id, account_id, birth_date, language, dominant_hand, school, school_type, current_school_degree, visual_difficulty, no_visual, 
 hearing_difficulty, no_hearing, movement_difficulty, md_right, md_left, md_both, no_movement_hands, nmh_right, nmh_left, nmh_both, communication_difficulty, 
 no_communication, hearing_comprehension_difficulty, game_flow_comprehension_difficulty, space_awarness_difficulty, other, modified_by, modified_on, version)
-VALUES (1, 9, '2005-8-9', 'ndls', 1, 1, 'Specialise', '1eme secondaire', FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, 'Child3', NULL, NULL, 0);
+VALUES (3, 9, '2005-8-9', 'ndls', 1, 1, 'Specialise', '1eme secondaire', FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, 'Child3', NULL, NULL, 0);
 
 /*
  * Games-open insert. each child has 2 games.   data : [ligneId : [activity : [like, help, happy]]] 
@@ -229,16 +229,16 @@ VALUES (1, 9, '2005-8-9', 'ndls', 1, 1, 'Specialise', '1eme secondaire', FALSE, 
  * ...
  *           
  */
-INSERT INTO savingjim.games_open (worker_id, child_id, date, data, modified_by, modified_on, version) VALUES (2, 7, '2019-10-20', '{1 : {"velo" : {"true", "false", "true"}, 2: {"serviraliments" : {"false", "true", -1}}, 3: {"toilettes" : {"false", "true", "false"}}}', NULL, NULL, 0);
+INSERT INTO savingjim.games_open (worker_id, child_id, date, data, modified_by, modified_on, version) VALUES (2, 7, '2019-10-20', '{ "1" : {"velo" : {"like":"true", "help":"false", "happy":"true"}, "2": {"serviraliments" : {"like":"false", "help":"true", "happy":"-1"}}, "3": {"toilettes" : {"like":"false", "help":"true", "happy":"false"}}}}', NULL, NULL, 0);
 
-INSERT INTO savingjim.games_open (worker_id, child_id, date, data, modified_by, modified_on, version) VALUES (2, 7, '2019-10-23', '{1 : {"velo" : {"true", "false", "true"}, 2: {"serviraliments" : {"true", "true", true}}, 3: {"urgence" : {"false", "true", "false"}}}', NULL, NULL, 0);
+INSERT INTO savingjim.games_open (worker_id, child_id, date, data, modified_by, modified_on, version) VALUES (2, 7, '2019-10-23', '{ "1" : {"velo" : {"like":"true", "help":"false", "happy":"true"}, "2": {"serviraliments" : {"like":"true", "help":"true", "happy":"true"}}, "3": {"urgence" : {"like":"false", "help":"true", "happy":"false"}}}}', NULL, NULL, 0);
 
-INSERT INTO savingjim.games_open (worker_id, child_id, date, data, modified_by, modified_on, version) VALUES (2, 8, '2019-01-20', '{1 : {"telephone" : {"true", "false", "true"}, 2: {"lire" : {"false", "true", -1}}, 3: {"balayer" : {"false", "true", "false"}}}', NULL, NULL, 0);
+INSERT INTO savingjim.games_open (worker_id, child_id, date, data, modified_by, modified_on, version) VALUES (2, 8, '2019-01-20', '{ "1" : {"telephone" : {"like":"true", "help":"false", "happy":"true"}, "2": {"lire" : {"like":"false", "help":"true", "happy":"-1"}}, "3": {"balayer" : {"like":"false", "help":"true", "happy":"false"}}}}', NULL, NULL, 0);
 
-INSERT INTO savingjim.games_open (worker_id, child_id, date, data, modified_by, modified_on, version) VALUES (2, 8, '2019-05-17', '{1 : {"television" : {"true", "false", "true"}, 2: {"prothese" : {"false", "true", "false"}}, 3: {"toilettes" : {"false", "true", "false"}}}', NULL, NULL, 0);
+INSERT INTO savingjim.games_open (worker_id, child_id, date, data, modified_by, modified_on, version) VALUES (2, 8, '2019-05-17', '{ "1" : {"television" : {"like":"true", "help":"false", "happy":"true"}, "2" : {"prothese" : {"like":"false", "help":"true", "happy":"false"}}, "3": {"toilettes" : {"like":"false", "help":"true", "happy":"false"}}}}', NULL, NULL, 0);
 
-INSERT INTO savingjim.games_open (worker_id, child_id, date, data, modified_by, modified_on, version) VALUES (3, 9, '2019-11-23', '{1 : {"acheter" : {"true", "true", "false"}, 2: {"serviraliments" : {"false", "true", -1}}, 3: {"allumer lumiere" : {"true", "false", "true"}}}', NULL, NULL, 0);
+INSERT INTO savingjim.games_open (worker_id, child_id, date, data, modified_by, modified_on, version) VALUES (3, 9, '2019-11-23', '{ "1" : {"acheter" : {"like":"true", "help":"true", "happy":"false"}, "2": {"serviraliments" : {"like":"false", "help":"true", "happy":"-1"}}, "3": {"allumer lumiere" : {"like":"true", "help":"false", "happy":"true"}}}}', NULL, NULL, 0);
 
-INSERT INTO savingjim.games_open (worker_id, child_id, date, data, modified_by, modified_on, version) VALUES (3, 9, '2019-10-20', '{1 : {"machine a laver" : {"false", "true", "false"}, 2: {"serviraliments" : {"true", "false", "true"}}, 3: {"toilettes" : {"false", "true", "false"}}}', NULL, NULL, 0);
+INSERT INTO savingjim.games_open (worker_id, child_id, date, data, modified_by, modified_on, version) VALUES (3, 9, '2019-10-20', '{ "1" : {"machine a laver" : {"like":"false", "help":"true", "happy":"false"}, "2": {"serviraliments" : {"like":"true", "help":"false", "happy":"true"}}, "3": {"toilettes" : {"like":"false", "help":"true", "happy":"false"}}}}', NULL, NULL, 0);
 
 

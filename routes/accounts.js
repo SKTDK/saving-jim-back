@@ -10,7 +10,7 @@ const bcrypt = require('bcrypt')
 const db = require('../modules/db')
 const config = require('../modules/config')
 
-const saltRounds = process.env.BCRYPT_SALT_ROUNDS || 10
+const saltRounds = process.env.SALT_BCRYPT || 10
 
 router.post("/addManager", function (req, res, next) {
 
@@ -49,7 +49,7 @@ router.post("/addManager", function (req, res, next) {
         } else {
             password = hash;
             // Insert user into DB
-            db.db.query('INSERT INTO savingjim.users (id, account_type, first_name, last_name, username, password, active, modified_on, modified_by, version) VALUES (default, 1, $1, $2, $3, $4, true, NOW(), NULL, 1)', [firstname, lastname, username, password])
+            db.db.query('INSERT INTO savingjim.users (id, account_type, first_name, last_name, login, password, active, modified_on, modified_by, version) VALUES (default, 1, $1, $2, $3, $4, true, NOW(), NULL, 1)', [firstname, lastname, username, password])
                 .then(result => {
                     if (result) {
                         res.status(200).json({

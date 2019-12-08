@@ -47,7 +47,7 @@ const authMiddleware = (req, res, next) => {
                     error: "Token has expired."
                 })
             } else {
-                db.db.query('SELECT id, account_type, first_name, last_name, username, password, active, modified_on, modified_by, version FROM savingjim.users where id=$1', [decoded.user])
+                db.db.query('SELECT id, account_type, first_name, last_name, login, password, active, modified_on, modified_by, version FROM savingjim.users where id=$1', [decoded.user])
                     .then(user => {
                         if (err || !user) {
                             res.status(500).send(err)
