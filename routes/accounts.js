@@ -49,7 +49,7 @@ router.post("/addManager", function (req, res, next) {
         } else {
             password = hash;
             // Insert user into DB
-            db.db.query('INSERT INTO savingjim.users (id, account_type, first_name, last_name, login, password, active, modified_on, modified_by, version) VALUES (default, 1, $1, $2, $3, $4, true, NOW(), NULL, 1)', [firstname, lastname, username, password])
+            db.db.query('INSERT INTO savingjim.users (id, account_type, first_name, last_name, username, password, active, modified_on, modified_by, version) VALUES (default, 1, $1, $2, $3, $4, true, NOW(), NULL, 1)', [firstname, lastname, username, password])
                 .then(result => {
                     if (result) {
                         res.status(200).json({
@@ -67,6 +67,81 @@ router.post("/addManager", function (req, res, next) {
             return;
         }
     });
+
+});
+
+router.post("/usersByAccountType", function (req, res, next) {
+
+    var accountType = req.body.accountType;
+
+    // Checking if data is valid before sending it to remote DB server
+    if (accountType === '0' || accountType === '1' || accountType === '2' || accountType === '3') {
+        res.status(412).json({
+            success: false,
+            error: "Wrong data sent! (1)"
+        })
+        return
+    }
+
+
+    db.db.query('SELECT id, account_type, first_name, last_name, username, active, modified_on, modified_by, version FROM savingjim.users where account_type=$1', [accountType])
+        .then(result => {
+            if (result) {
+                var xd = result.rows;
+                res.setHeader("content-type", "application/json; charset=utf-8");
+                res.send(xd);
+            } else {
+                res.status(401).json({
+                    success: false,
+                    error: "bad username"
+                })
+            }
+
+        })
+        .catch(e => console.error(e.stack))
+    return;
+
+
+});
+
+router.post("/changeAccountState", function (req, res, next) {
+
+    var username = req.body.username;
+    var active = req.body.active;
+
+    if (!username) {
+        res.status(412).json({
+            success: false,
+            error: "Wrong data sent! (1)"
+        })
+        return
+    }
+
+    if (!username.match(config.REGEX_USERNAME) || username.length > config.LEN_USERNAME) {
+        res.status(413).json({
+            success: false,
+            error: "Wrong data sent! (3)"
+        })
+        return
+    }
+
+    db.db.query('UPDATE savingjim.users SET active=$1 WHERE username=$2', [active, username])
+        .then(result => {
+            if (result) {
+                res.status(200).json({
+                    success: true
+                })
+            } else {
+                res.status(401).json({
+                    success: false,
+                    error: "bad username"
+                })
+            }
+
+        })
+        .catch(e => console.error(e.stack))
+    return;
+
 
 });
 module.exports = router;
