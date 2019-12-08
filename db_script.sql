@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS savingjim.users(
     account_type INTEGER NOT NULL,
     first_name VARCHAR(70) NOT NULL,
     last_name VARCHAR(70) NOT NULL,
-    login VARCHAR(70) NOT NULL UNIQUE,
+    username VARCHAR(70) NOT NULL UNIQUE,
     password VARCHAR(60) NOT NULL,
     active BOOLEAN NOT NULL,
     modified_on TIMESTAMP,
