@@ -26,8 +26,6 @@ const jwtSecret = process.env.JWT_SECRET
  */
 
 router.post("/login", function (req, res, next) {
-
-    console.log(res.body);
     
     var username = req.body.username;
     var password = req.body.password;

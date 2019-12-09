@@ -37,10 +37,11 @@ app.use(bodyParser.json({
 app.use('/test', testRouter)
 // Configure routes
 app.use(authRouter)
+app.use(usersRouter)
+
 // Secure the API
 app.use(authMiddleware)
 // Other routes
-app.use('/users', usersRouter)
 app.use('/gallery', galleryRouter)
 app.use('/quotes', quotesRouter)
 app.use('/accounts', accountsRouter)

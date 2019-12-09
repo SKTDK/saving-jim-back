@@ -38,58 +38,52 @@ router.post("/user", function (req, res, next) {
     var account_type = req.body.accountType;
     var first_name = req.body.firstName;
     var last_name = req.body.lastName;
-    var login = req.body.login;
+    var user_name = req.body.username;
     var password = req.body.password;
 
-    var user = {account_type, first_name, last_name, login, password};
+    var user = {account_type, first_name, last_name, user_name, password};
     //Check for null fields and login-pwd matching regex (see /modules/config.js), sends an error if pblm
     if(checkUserFields(user, res)){
-        //Check if login is already used
-        if(!checkUserLoginExists(user)){
-            bcrypt.genSalt(process.env.SALT_BCRYPT, function(err, salt){
-                bcrypt.hash(user.password, salt, function(err, hash){
-                    db.db.query('INSERT INTO savingjim.users (account_type, first_name, last_name, login, password, active, modified_on, modified_by, version) VALUES ($1, $2, $3, $4, $5, true, NULL, NULL',
-                                    [user.account_type, user.first_name, user.last_name, user.login, hash])
-                        .then(res => {
-                            delete user.password;
-                            res.status(200).json({
-                                succes: true, user
-                            });
+        //Check if login is already used.
+        db.db.query('SELECT COUNT(username) FROM savingjim.users WHERE username=$1;', [user.user_name])
+            .then(result => {
+                if(result.rows[0].count === '0'){
+                    console.log("username inexistant");
+                    bcrypt.genSalt(parseInt(process.env.SALT_BCRYPT)).then(salt => {
+                        bcrypt.hash(user.password, salt, function(err, hash){
+                            db.db.query('INSERT INTO savingjim.users (account_type, first_name, last_name, username, password, active, modified_on, modified_by, version) VALUES ($1, $2, $3, $4, $5, true, NULL, NULL, 0);',
+                                            [user.account_type, user.first_name, user.last_name, user.user_name, hash])
+                                .then(result => {
+                                    delete user.password;
+                                    res.status(200).json({
+                                        succes: true,
+                                        user: user
+                                    });
+                                    return
+                                }).catch(err => console.error(err));
                         });
-                });
-            }).catch(err => console.error(e.stack));
-        }else {
-            res.status(400).json({
-                success:false,
-                error: "Login already used"
-            })
-        }
+                    }).catch(err => console.error(err));
+                }else {
+                    res.status(400).json({
+                        success:false,
+                        error: "Username already used"
+                    })
+                    return
+                }
+            }).catch(err => console.error(err));
     }
 });
 
-
-let checkUserLoginExists = function(user){
-    db.db.query('SELECT COUNT(login) FROM savingjim.users WHERE login=$1', [user.login])
-        .then(result => {
-            if(result != 0){
-                return true;
-            }else {
-                return false;
-            }
-        }).catch(err => console.error(err));
-}
-
 let checkUserFields = function(user, res){
-    
-    if(!user.password.match(config.REGEX_PASSWORD) || user.password.length > config.LEN_PASSWORD || !user.login.match(config.REGEX_USERNAME) || !user.login.length > config.LEN_USERNAME){
+    if(!user.password.match(config.REGEX_PASSWORD) || user.password.length > config.LEN_PASSWORD || !user.user_name.match(config.REGEX_USERNAME) || !user.user_name.length > config.LEN_USERNAME){
         res.status(400).json({
             success: false,
             error: "Login or Password invalid"
         })
         return false;
     }
-
-    if(!user.account_type){
+    //Account types are included between (0->3)
+    if(user.account_type < 0 || user.account_type > 3){
         res.status(400).json({
             success: false,
             error: "Account type requried"
@@ -113,7 +107,7 @@ let checkUserFields = function(user, res){
         return false;
     }
 
-    if(!user.login){
+    if(!user.user_name){
         res.status(400).json({
             success: false,
             error: "Login requried"
