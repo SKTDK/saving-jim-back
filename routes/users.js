@@ -48,21 +48,21 @@ router.post("/user", function (req, res, next) {
         db.db.query('SELECT COUNT(username) FROM savingjim.users WHERE username=$1;', [user.user_name])
             .then(result => {
                 if(result.rows[0].count === '0'){
-                    console.log("username inexistant");
-                    bcrypt.genSalt(parseInt(process.env.SALT_BCRYPT)).then(salt => {
-                        bcrypt.hash(user.password, salt, function(err, hash){
-                            db.db.query('INSERT INTO savingjim.users (account_type, first_name, last_name, username, password, active, modified_on, modified_by, version) VALUES ($1, $2, $3, $4, $5, true, NULL, NULL, 0);',
+                    bcrypt.genSalt(parseInt(process.env.SALT_BCRYPT))
+                        .then(salt => {
+                            bcrypt.hash(user.password, salt, function(err, hash){
+                                db.db.query('INSERT INTO savingjim.users (account_type, first_name, last_name, username, password, active, modified_on, modified_by, version) VALUES ($1, $2, $3, $4, $5, true, NULL, NULL, 0);',
                                             [user.account_type, user.first_name, user.last_name, user.user_name, hash])
-                                .then(result => {
-                                    delete user.password;
-                                    res.status(200).json({
-                                        succes: true,
-                                        user: user
-                                    });
-                                    return
-                                }).catch(err => console.error(err));
-                        });
-                    }).catch(err => console.error(err));
+                                    .then(result => {
+                                        delete user.password;
+                                        res.status(200).json({
+                                            succes: true,
+                                            user: user
+                                        });
+                                        return
+                                    }).catch(err => console.error(err));
+                            });
+                         }).catch(err => console.error(err));
                 }else {
                     res.status(400).json({
                         success:false,
@@ -110,7 +110,7 @@ let checkUserFields = function(user, res){
     if(!user.user_name){
         res.status(400).json({
             success: false,
-            error: "Login requried"
+            error: "Username requried"
         })
         return false;
     }
