@@ -51,8 +51,8 @@ router.post("/login", function (req, res, next) {
     }
 
     // Prepared statement
-    // It is a bad practice to use * so we list everything, so if tables change in the database it does not corrupt the code.
-    db.db.query('SELECT id, account_type, first_name, last_name, login, password, active, modified_on, modified_by, version FROM savingjim.users where login=$1', [username])
+    // It is a bad practice to use * so we list evrything, so if tables change in the database it does not corrupt the code.
+    db.db.query('SELECT id, account_type, first_name, last_name, username, password, active, modified_on, modified_by, version FROM savingjim.users where username=$1', [username])
         .then(result => {
             user = result.rows[0];
             if (user) {

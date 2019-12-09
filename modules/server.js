@@ -45,7 +45,6 @@ app.use('/gallery', galleryRouter)
 app.use('/quotes', quotesRouter)
 app.use('/accounts', accountsRouter)
 
-
 // Start server
 var start = function (callback) {
     app.listen(port, () => {
@@ -53,6 +52,7 @@ var start = function (callback) {
         if (callback) callback(null)
     })
 };
+
 
 
 /**
