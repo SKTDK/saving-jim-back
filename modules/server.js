@@ -11,6 +11,7 @@ const usersRouter = require('../routes/users')
 const galleryRouter = require('../routes/gallery')
 const quotesRouter = require('../routes/quotes')
 const accountsRouter = require('../routes/accounts')
+const gameRouter = require("../routes/games")
 // TEST PGSQL
 const testRouter = require('../routes/test')
 
@@ -38,6 +39,7 @@ app.use('/test', testRouter)
 // Configure routes
 app.use(authRouter)
 app.use(usersRouter)
+app.use(gameRouter);
 
 // Secure the API
 app.use(authMiddleware)
@@ -45,6 +47,7 @@ app.use(authMiddleware)
 app.use('/gallery', galleryRouter)
 app.use('/quotes', quotesRouter)
 app.use('/accounts', accountsRouter)
+
 
 // Start server
 var start = function (callback) {
