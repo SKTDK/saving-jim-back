@@ -20,7 +20,7 @@ const testRouter = require('../routes/test')
 
 // Global variables
 const host = process.env.SERVER_HOST;
-const port = process.env.SERVER_PORT;
+const port = process.env.PORT || 8080;
 const app = express();
 
 /**
