@@ -25,7 +25,7 @@ const jwtSecret = process.env.JWT_SECRET
  * Routes
  */
 
-router.post("/username", function (req, res, next) {
+router.post("/login", function (req, res, next) {
 
     var username = req.body.username;
     var password = req.body.password;
@@ -49,7 +49,7 @@ router.post("/username", function (req, res, next) {
     }
 
     // Prepared statement
-    // It is a bad practice to use * so we list everything, so if tables change in the database it does not corrupt the code.
+    // It is a bad practice to use * so we list evrything, so if tables change in the database it does not corrupt the code.
     db.db.query('SELECT id, account_type, first_name, last_name, username, password, active, modified_on, modified_by, version FROM savingjim.users where username=$1', [username])
         .then(result => {
             user = result.rows[0];

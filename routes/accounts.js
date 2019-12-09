@@ -144,4 +144,294 @@ router.post("/changeAccountState", function (req, res, next) {
 
 
 });
+
+router.post("/updateAccount", function (req, res, next) {
+
+    var id = req.body.id;
+    var firstname = req.body.firstname;
+    var lastname = req.body.lastname;
+    var password = req.body.password;
+
+    // checking if the id is an int
+    if (id !== parseInt(id, 10)) {
+        res.status(412).json({
+            success: false,
+            error: "Wrong data sent! (1)"
+        })
+        return
+    }
+
+    // Checking what we have to update depending on what the client sent us
+
+    // Updating firstname lastname and password
+    if (firstname && lastname && password) {
+        // update all
+        if (!firstname.match(config.REGEX_NAME) || firstname.length > config.LEN_NAME || !lastname.match(config.REGEX_NAME) ||
+            lastname.length > config.LEN_NAME || !password.match(config.REGEX_PASSWORD) || password.length > config.LEN_PASSWORD) {
+
+            res.status(413).json({
+                success: false,
+                error: "Wrong data sent! (2)"
+            })
+            return
+        }
+
+        bcrypt.hash(password, saltRounds, function (err, hash) {
+            if (err) {
+                res.status(500).json({
+                    success: false,
+                    error: "Unable to hash password"
+                })
+            } else {
+                password = hash;
+                // Insert user into DB
+                db.db.query('UPDATE savingjim.users SET first_name=$1, last_name=$2, password=$3 WHERE id=$4', [firstname, lastname, password, id])
+                    .then(result => {
+                        if (result) {
+                            res.status(200).json({
+                                success: true
+                            })
+                        } else {
+                            res.status(401).json({
+                                success: false,
+                                error: "Error (4)"
+                            })
+                        }
+
+                    })
+                    .catch(e => console.error(e.stack))
+                return;
+            }
+        });
+        return;
+    }
+
+    // Updating firstname and lastname
+    if (firstname && lastname) {
+        if (!firstname.match(config.REGEX_NAME) || firstname.length > config.LEN_NAME || !lastname.match(config.REGEX_NAME) ||
+            lastname.length > config.LEN_NAME) {
+
+            res.status(413).json({
+                success: false,
+                error: "Wrong data sent! (3)"
+            })
+            return
+        }
+        db.db.query('UPDATE savingjim.users SET first_name=$1, last_name=$2 WHERE id=$3', [firstname, lastname, id])
+            .then(result => {
+                if (result) {
+                    res.status(200).json({
+                        success: true
+                    })
+                } else {
+                    res.status(401).json({
+                        success: false,
+                        error: "Error (4)"
+                    })
+                }
+
+            })
+            .catch(e => console.error(e.stack))
+        return;
+    }
+
+    if (firstname && password) {
+        if (!firstname.match(config.REGEX_NAME) || firstname.length > config.LEN_NAME || !password.match(config.REGEX_PASSWORD) ||
+            password.length > config.LEN_PASSWORD) {
+
+            res.status(413).json({
+                success: false,
+                error: "Wrong data sent! (3)"
+            })
+            return
+        }
+
+        bcrypt.hash(password, saltRounds, function (err, hash) {
+            if (err) {
+                res.status(500).json({
+                    success: false,
+                    error: "Unable to hash password"
+                })
+            } else {
+                password = hash;
+                // Insert user into DB
+                db.db.query('UPDATE savingjim.users SET first_name=$1, password=$2 WHERE id=$3', [firstname, password, id])
+                    .then(result => {
+                        if (result) {
+                            res.status(200).json({
+                                success: true
+                            })
+                        } else {
+                            res.status(401).json({
+                                success: false,
+                                error: "Error (4)"
+                            })
+                        }
+
+                    })
+                    .catch(e => console.error(e.stack))
+                return;
+            }
+        });
+    }
+
+
+    if (lastname && password) {
+        if (!lastname.match(config.REGEX_NAME) || lastname.length > config.LEN_NAME || !password.match(config.REGEX_PASSWORD) ||
+            password.length > config.LEN_PASSWORD) {
+
+            res.status(413).json({
+                success: false,
+                error: "Wrong data sent! (3)"
+            })
+            return
+        }
+
+        bcrypt.hash(password, saltRounds, function (err, hash) {
+            if (err) {
+                res.status(500).json({
+                    success: false,
+                    error: "Unable to hash password"
+                })
+            } else {
+                password = hash;
+                // Insert user into DB
+                db.db.query('UPDATE savingjim.users SET last_name=$1, password=$2 WHERE id=$3', [lastname, password, id])
+                    .then(result => {
+                        if (result) {
+                            res.status(200).json({
+                                success: true
+                            })
+                        } else {
+                            res.status(401).json({
+                                success: false,
+                                error: "Error (4)"
+                            })
+                        }
+
+                    })
+                    .catch(e => console.error(e.stack))
+                return;
+            }
+        });
+    }
+
+    if (firstname) {
+        if (!firstname.match(config.REGEX_NAME) || firstname.length > config.LEN_NAME) {
+            res.status(413).json({
+                success: false,
+                error: "Wrong data sent! (3)"
+            })
+            return
+        }
+        db.db.query('UPDATE savingjim.users SET first_name=$1 WHERE id=$2', [firstname, id])
+            .then(result => {
+                if (result) {
+                    res.status(200).json({
+                        success: true
+                    })
+                } else {
+                    res.status(401).json({
+                        success: false,
+                        error: "Error (4)"
+                    })
+                }
+
+            })
+            .catch(e => console.error(e.stack))
+        return;
+    }
+    if (lastname) {
+        if (!lastname.match(config.REGEX_NAME) || lastname.length > config.LEN_NAME) {
+            res.status(413).json({
+                success: false,
+                error: "Wrong data sent! (3)"
+            })
+            return
+        }
+        db.db.query('UPDATE savingjim.users SET last_name=$1 WHERE id=$2', [lastname, id])
+            .then(result => {
+                if (result) {
+                    res.status(200).json({
+                        success: true
+                    })
+                } else {
+                    res.status(401).json({
+                        success: false,
+                        error: "Error (4)"
+                    })
+                }
+
+            })
+            .catch(e => console.error(e.stack))
+        return;
+    }
+
+    if (password) {
+        if (!password.match(config.REGEX_PASSWORD) ||
+            password.length > config.LEN_PASSWORD) {
+            res.status(413).json({
+                success: false,
+                error: "Wrong data sent! (3)"
+            })
+            return
+        }
+
+        bcrypt.hash(password, saltRounds, function (err, hash) {
+            if (err) {
+                res.status(500).json({
+                    success: false,
+                    error: "Unable to hash password"
+                })
+            } else {
+                password = hash;
+                // Insert user into DB
+                db.db.query('UPDATE savingjim.users SET password=$1 WHERE id=$2', [password, id])
+                    .then(result => {
+                        if (result) {
+                            res.status(200).json({
+                                success: true
+                            })
+                        } else {
+                            res.status(401).json({
+                                success: false,
+                                error: "Error (4)"
+                            })
+                        }
+
+                    })
+                    .catch(e => console.error(e.stack))
+                return;
+            }
+        });
+    }
+
+    // if everything is null then we don't update anything
+    res.status(401).json({
+        success: false,
+        error: "Error No parameter given"
+    })
+});
+
+router.post("/statistics", function (req, res, next) {
+    db.db.query('SELECT COUNT(users) FROM savingjim.users', [active, username])
+        .then(result => {
+            if (result) {
+                res.status(200).json({
+                    success: true,
+                    data: result.rows
+                })
+            } else {
+                res.status(401).json({
+                    success: false,
+                    error: "bad username"
+                })
+            }
+
+        })
+        .catch(e => console.error(e.stack))
+    return;
+
+
+});
 module.exports = router;
