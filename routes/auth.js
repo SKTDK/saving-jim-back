@@ -55,7 +55,7 @@ router.post("/login", function (req, res, next) {
             user = result.rows[0];
             if (user) {
                 //If the account is not active anymore he can't connect
-                if(!user.active){
+                if(user.active === true){
                     bcrypt.compare(password, user.password, function (err, result) {
                         if (result) {
                             const exp = Date.now() + 12 * 60 * 60 * 1000; // 12h
