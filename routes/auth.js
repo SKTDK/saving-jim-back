@@ -26,7 +26,7 @@ const jwtSecret = process.env.JWT_SECRET
  */
 
 router.post("/login", function (req, res, next) {
-    
+
     var username = req.body.username;
     var password = req.body.password;
 
@@ -54,35 +54,43 @@ router.post("/login", function (req, res, next) {
         .then(result => {
             user = result.rows[0];
             if (user) {
-                bcrypt.compare(password, user.password, function (err, result) {
-                    if (result) {
-                        const exp = Date.now() + 12 * 60 * 60 * 1000; // 12h
-                        jwt.sign({
-                            user: user.id,
-                            exp: exp
-                        }, jwtSecret, (err, token) => {
-                            if (err) {
-                                console.log(err)
-                                res.status(500).json({
-                                    success: false,
-                                    error: "error during token signing"
-                                })
-                            } else {
-                                delete user.password
-                                res.status(200).json({
-                                    success: true,
-                                    user,
-                                    token
-                                })
-                            }
-                        });
-                    } else {
-                        res.status(401).json({
-                            success: false,
-                            error: "bad password"
-                        })
-                    }
-                })
+                //If the account is not active anymore he can't connect
+                if(!user.active){
+                    bcrypt.compare(password, user.password, function (err, result) {
+                        if (result) {
+                            const exp = Date.now() + 12 * 60 * 60 * 1000; // 12h
+                            jwt.sign({
+                                user: user.id,
+                                exp: exp
+                            }, jwtSecret, (err, token) => {
+                                if (err) {
+                                    console.log(err)
+                                    res.status(500).json({
+                                        success: false,
+                                        error: "error during token signing"
+                                    })
+                                } else {
+                                    delete user.password
+                                    res.status(200).json({
+                                        success: true,
+                                        user,
+                                        token
+                                    })
+                                }
+                            });
+                        } else {
+                            res.status(401).json({
+                                success: false,
+                                error: "bad password"
+                            })
+                        }
+                    })
+                }else {
+                    res.status(400).json({
+                        success: false,
+                        error: "Account is inactive, you can't connect anymore"
+                    })
+                }
             } else {
                 res.status(401).json({
                     success: false,
