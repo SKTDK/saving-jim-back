@@ -17,7 +17,7 @@ const config = require('../modules/config')
 
 const saltRounds = process.env.BCRYPT_SALT_ROUNDS || 10
 // To use it in Production, don't forget to set-up a new environment variable
-const jwtSecret = process.env.JWT_SECRET
+const jwtSecret = 'secret'
 
 
 
@@ -55,7 +55,7 @@ router.post("/login", function (req, res, next) {
             user = result.rows[0];
             if (user) {
                 //If the account is not active anymore he can't connect
-                if(user.active === true){
+                if (user.active === true) {
                     bcrypt.compare(password, user.password, function (err, result) {
                         if (result) {
                             const exp = Date.now() + 12 * 60 * 60 * 1000; // 12h
@@ -85,7 +85,7 @@ router.post("/login", function (req, res, next) {
                             })
                         }
                     })
-                }else {
+                } else {
                     res.status(400).json({
                         success: false,
                         error: "Account is inactive, you can't connect anymore"
