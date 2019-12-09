@@ -12,18 +12,28 @@ const config = require('../modules/config')
 
 const saltRounds = process.env.SALT_BCRYPT || 10
 
-router.post("/addManager", function (req, res, next) {
+router.post("/addUser", function (req, res, next) {
 
+    var accountType = req.body.accountType;
     var firstname = req.body.username;
     var lastname = req.body.username;
     var username = req.body.username;
     var password = req.body.password;
 
     // Checking if data is valid before sending it to remote DB server
-    if (!firstname || !lastname || !username || !password) {
+    if (accountType === '0' || accountType === '1' || accountType === '2' || accountType === '3') {
         res.status(412).json({
             success: false,
             error: "Wrong data sent! (1)"
+        })
+        return
+    }
+
+    // Checking if data is valid before sending it to remote DB server
+    if (!firstname || !lastname || !username || !password) {
+        res.status(412).json({
+            success: false,
+            error: "Wrong data sent! (2)"
         })
         return
     }
@@ -35,7 +45,7 @@ router.post("/addManager", function (req, res, next) {
 
         res.status(413).json({
             success: false,
-            error: "Wrong data sent! (2)"
+            error: "Wrong data sent! (3)"
         })
         return
     }
@@ -49,7 +59,7 @@ router.post("/addManager", function (req, res, next) {
         } else {
             password = hash;
             // Insert user into DB
-            db.db.query('INSERT INTO savingjim.users (id, account_type, first_name, last_name, username, password, active, modified_on, modified_by, version) VALUES (default, 1, $1, $2, $3, $4, true, NOW(), NULL, 1)', [firstname, lastname, username, password])
+            db.db.query('INSERT INTO savingjim.users (id, account_type, first_name, last_name, username, password, active, modified_on, modified_by, version) VALUES (DEFAULT, $1, $2, $3, $4, $5, true, NOW(), NULL, 1)', [accountType, firstname, lastname, username, password])
                 .then(result => {
                     if (result) {
                         res.status(200).json({
