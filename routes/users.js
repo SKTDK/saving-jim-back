@@ -4,7 +4,20 @@
 
 const express = require('express')
 const router = express.Router()
+const jwt = require('jsonwebtoken')
+const _ = require('lodash')
+const bcrypt = require('bcrypt')
 const db = require('../modules/db')
+const config = require('../modules/config')
+
+
+/**
+ * Variables
+ */
+
+const saltRounds = process.env.SALT_BCRYPT || 10
+// To use it in Production, don't forget to set-up a new environment variable
+const jwtSecret = process.env.JWT_SECRET
 
 
 
@@ -12,22 +25,114 @@ const db = require('../modules/db')
  * Routes
  */
 
-// Return a user
-router.get("/", function(req, res) {
-  	db.db.collection("users").findOne().then(user => {
-		delete user.password
-		res.json(user)
-	})
-})
+ /* 
+account_type
+0 = admin
+1 = worker
+2 = person_of_contact
+3 = child
+ */
 
-router.post("/me", function(req, res, next) {
-    res.json(req.user)
-})
+router.post("/user", function (req, res, next) {
+
+    var account_type = req.body.accountType;
+    var first_name = req.body.firstName;
+    var last_name = req.body.lastName;
+    var login = req.body.login;
+    var password = req.body.password;
+
+    var user = {account_type, first_name, last_name, login, password};
+    //Check for null fields and login-pwd matching regex (see /modules/config.js), sends an error if pblm
+    if(checkUserFields(user, res)){
+        //Check if login is already used
+        if(!checkUserLoginExists(user)){
+            bcrypt.genSalt(process.env.SALT_BCRYPT, function(err, salt){
+                bcrypt.hash(user.password, salt, function(err, hash){
+                    db.db.query('INSERT INTO savingjim.users (account_type, first_name, last_name, login, password, active, modified_on, modified_by, version) VALUES ($1, $2, $3, $4, $5, true, NULL, NULL',
+                                    [user.account_type, user.first_name, user.last_name, user.login, hash])
+                        .then(res => {
+                            delete user.password;
+                            res.status(200).json({
+                                succes: true, user
+                            });
+                        });
+                });
+            }).catch(err => console.error(e.stack));
+        }else {
+            res.status(400).json({
+                success:false,
+                error: "Login already used"
+            })
+        }
+    }
+});
 
 
+let checkUserLoginExists = function(user){
+    db.db.query('SELECT COUNT(login) FROM savingjim.users WHERE login=$1', [user.login])
+        .then(result => {
+            if(result != 0){
+                return true;
+            }else {
+                return false;
+            }
+        }).catch(err => console.error(err));
+}
+
+let checkUserFields = function(user, res){
+    
+    if(!user.password.match(config.REGEX_PASSWORD) || user.password.length > config.LEN_PASSWORD || !user.login.match(config.REGEX_USERNAME) || !user.login.length > config.LEN_USERNAME){
+        res.status(400).json({
+            success: false,
+            error: "Login or Password invalid"
+        })
+        return false;
+    }
+
+    if(!user.account_type){
+        res.status(400).json({
+            success: false,
+            error: "Account type requried"
+        })
+        return false;
+    }
+
+    if(!user.first_name){
+        res.status(400).json({
+            success: false,
+            error: "First name required"
+        })
+        return false;
+    }
+
+    if(!user.last_name){
+        res.status(400).json({
+            success: false,
+            error: "Last name requried"
+        })
+        return false;
+    }
+
+    if(!user.login){
+        res.status(400).json({
+            success: false,
+            error: "Login requried"
+        })
+        return false;
+    }
+
+    if(!user.password){
+        res.status(400).json({
+            success: false,
+            error: "Password required"
+        })
+        return false;
+    }
+    return true;
+}
 
 /**
  * Exports
  */
 
-module.exports = router
+module.exports = router;
