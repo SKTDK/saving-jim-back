@@ -424,13 +424,12 @@ router.post("/updateAccount", function (req, res, next) {
 });
 
 router.post("/statistics", function (req, res, next) {
-    db.db.query('SELECT COUNT(users) FROM savingjim.users', [active, username])
+    db.db.query('SELECT account_type, COUNT(id) FROM savingjim.users GROUP BY account_type ORDER BY account_type ASC')
         .then(result => {
             if (result) {
-                res.status(200).json({
-                    success: true,
-                    data: result.rows
-                })
+                var xd = result.rows;
+                res.status(200);
+                res.send(xd);
             } else {
                 res.status(401).json({
                     success: false,
