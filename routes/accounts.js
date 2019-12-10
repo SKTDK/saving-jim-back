@@ -20,6 +20,8 @@ router.post("/addUser", function (req, res, next) {
     var username = req.body.username;
     var password = req.body.password;
 
+    var payload = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
+
     // Checking if data is valid before sending it to remote DB server
     if (accountType === '0' || accountType === '1' || accountType === '2' || accountType === '3') {
         res.status(412).json({
