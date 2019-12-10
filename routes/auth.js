@@ -16,8 +16,6 @@ const config = require('../modules/config')
  */
 
 const saltRounds = process.env.BCRYPT_SALT_ROUNDS || 10
-// To use it in Production, don't forget to set-up a new environment variable
-const jwtSecret = 'secret'
 
 
 
@@ -58,11 +56,11 @@ router.post("/login", function (req, res, next) {
                 if (user.active === true) {
                     bcrypt.compare(password, user.password, function (err, result) {
                         if (result) {
-                            const exp = Date.now() + 12 * 60 * 60 * 1000; // 12h
+                            const exp = Date.now() + 24 * 60 * 60 * 1000; // 12h
                             jwt.sign({
-                                user: user.id,
+                                user: user,
                                 exp: exp
-                            }, jwtSecret, (err, token) => {
+                            }, process.env.JWT_SECRET, (err, token) => {
                                 if (err) {
                                     console.log(err)
                                     res.status(500).json({
