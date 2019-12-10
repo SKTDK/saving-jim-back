@@ -111,11 +111,7 @@ router.post("/usersByAccountType", function (req, res, next) {
     var accountType = req.body.accountType;
     var payload = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
 
-    if (payload.user.account_type !== 0 && payload.user.account_type !== 1) {
-        // not allowed to
-        res.status(500);
-        return;
-    }
+
 
     // Checking if data is valid before sending it to remote DB server
     if (accountType === '0' || accountType === '1' || accountType === '2' || accountType === '3') {
@@ -126,6 +122,11 @@ router.post("/usersByAccountType", function (req, res, next) {
         return
     }
 
+    if (payload.user.account_type === 2 || payload.user.account_type === 3) {
+        // not allowed to
+        res.status(500).send();
+        return;
+    }
 
     db.db.query('SELECT id, account_type, first_name, last_name, username, active, modified_on, modified_by, version FROM savingjim.users where account_type=$1', [accountType])
         .then(result => {
