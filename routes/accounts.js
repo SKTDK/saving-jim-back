@@ -613,45 +613,16 @@ router.post("/search", function (req, res, next) {
 
     db.db
         .query(
-            "SELECT id, account_type, first_name, last_name, username, active, modified_on, modified_by, version FROM savingjim.users WHERE username LIKE $1 AND account_type=$2 LIMIT 1",
+            "SELECT id, account_type, first_name, last_name, username, active, modified_on, modified_by, version FROM savingjim.users WHERE first_name LIKE $1 OR last_name LIKE $1 OR username LIKE $1 AND account_type=$2 LIMIT 100",
             [text + '%', accountType])
         .then(result => {
             if (result.rows[0]) {
-                var body = result.rows[0];
+                var body = result.rows;
                 res.setHeader("content-type", "application/json; charset=utf-8");
                 res.send(body);
             } else {
-                db.db
-                    .query(
-                        "SELECT id, account_type, first_name, last_name, username, active, modified_on, modified_by, version FROM savingjim.users WHERE first_name LIKE $1 AND account_type=$2 LIMIT 1",
-                        [text + '%', accountType])
-                    .then(result => {
-                        if (result.rows[0]) {
-                            var body = result.rows[0];
-                            res.setHeader("content-type", "application/json; charset=utf-8");
-                            res.send(body);
-                        } else {
-                            db.db
-                                .query(
-                                    "SELECT id, account_type, first_name, last_name, username, active, modified_on, modified_by, version FROM savingjim.users WHERE last_name LIKE $1 AND account_type=$2 LIMIT 1",
-                                    [text + '%', accountType])
-                                .then(result => {
-                                    if (result.rows[0]) {
-                                        var body = result.rows[0];
-                                        res.setHeader("content-type", "application/json; charset=utf-8");
-                                        res.send(body);
-                                    } else {
-                                        res.status(500).json({
+                res.status(500).json({});
 
-                                        });
-                                    }
-                                })
-                                .catch(e => console.error(e.stack));
-                            return;
-                        }
-                    })
-                    .catch(e => console.error(e.stack));
-                return;
             }
         })
         .catch(e => console.error(e.stack));
