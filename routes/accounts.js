@@ -613,7 +613,7 @@ router.post("/search", function (req, res, next) {
 
     db.db
         .query(
-            "SELECT id, account_type, first_name, last_name, username, active, modified_on, modified_by, version FROM savingjim.users WHERE first_name LIKE $1 OR last_name LIKE $1 OR username LIKE $1 AND account_type=$2 LIMIT 100",
+            "SELECT id, account_type, first_name, last_name, username, active, modified_on, modified_by, version FROM savingjim.users WHERE (first_name LIKE $1 OR last_name LIKE $1 OR username LIKE $1) AND account_type=$2 LIMIT 100",
             [text + '%', accountType])
         .then(result => {
             if (result.rows[0]) {
