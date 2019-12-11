@@ -143,7 +143,7 @@ router.post("/usersByAccountType", function (req, res, next) {
 
     db.db
         .query(
-            "SELECT id, account_type, first_name, last_name, username, active, modified_on, modified_by, version FROM savingjim.users where account_type=$1",
+            "SELECT id, account_type, first_name, last_name, username, active, modified_on, modified_by, version FROM savingjim.users where account_type=$1 LIMIT 50",
             [accountType]
         )
         .then(result => {
@@ -552,7 +552,7 @@ router.post("/statistics", function (req, res, next) {
     if (payload.user.account_type === 0) {
         db.db
             .query(
-                "SELECT account_type, COUNT(id) FROM savingjim.users GROUP BY account_type ORDER BY account_type ASC"
+                "SELECT account_type, COUNT(id) FROM savingjim.users GROUP BY account_type ORDER BY account_type ASC LIMIT 50"
             )
             .then(result => {
                 if (result) {
@@ -576,8 +576,16 @@ router.post("/statistics", function (req, res, next) {
 
 router.post("/search", function (req, res, next) {
     var payload = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
+
     var text = req.body.text;
 
+    // only looking for specific types
+    var accountType = req.body.accountType;
+    if (accountType !== parseInt(accountType, 10)) {
+        // wrong
+        res.status(500).send();
+        return;
+    }
     if (payload.user.account_type === 2 || payload.user.account_type === 3) {
         // not allowed to
         res.status(500).send();
@@ -605,37 +613,36 @@ router.post("/search", function (req, res, next) {
 
     db.db
         .query(
-            "SELECT id, account_type, first_name, last_name, username, active, modified_on, modified_by, version FROM savingjim.users WHERE username LIKE $1 LIMIT 1",
-            [text + '%'])
+            "SELECT id, account_type, first_name, last_name, username, active, modified_on, modified_by, version FROM savingjim.users WHERE username LIKE $1 AND account_type=$2 LIMIT 1",
+            [text + '%', accountType])
         .then(result => {
             if (result.rows[0]) {
-                var body = result.rows;
+                var body = result.rows[0];
                 res.setHeader("content-type", "application/json; charset=utf-8");
                 res.send(body);
             } else {
                 db.db
                     .query(
-                        "SELECT id, account_type, first_name, last_name, username, active, modified_on, modified_by, version FROM savingjim.users WHERE first_name LIKE $1 LIMIT 1",
-                        [text + '%'])
+                        "SELECT id, account_type, first_name, last_name, username, active, modified_on, modified_by, version FROM savingjim.users WHERE first_name LIKE $1 AND account_type=$2 LIMIT 1",
+                        [text + '%', accountType])
                     .then(result => {
                         if (result.rows[0]) {
-                            var body = result.rows;
+                            var body = result.rows[0];
                             res.setHeader("content-type", "application/json; charset=utf-8");
                             res.send(body);
                         } else {
                             db.db
                                 .query(
-                                    "SELECT id, account_type, first_name, last_name, username, active, modified_on, modified_by, version FROM savingjim.users WHERE last_name LIKE $1 LIMIT 1",
-                                    [text + '%'])
+                                    "SELECT id, account_type, first_name, last_name, username, active, modified_on, modified_by, version FROM savingjim.users WHERE last_name LIKE $1 AND account_type=$2 LIMIT 1",
+                                    [text + '%', accountType])
                                 .then(result => {
                                     if (result.rows[0]) {
-                                        var body = result.rows;
+                                        var body = result.rows[0];
                                         res.setHeader("content-type", "application/json; charset=utf-8");
                                         res.send(body);
                                     } else {
-                                        res.status(401).json({
-                                            success: false,
-                                            error: "bad username"
+                                        res.status(500).json({
+
                                         });
                                     }
                                 })
