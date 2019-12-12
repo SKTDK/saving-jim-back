@@ -10,7 +10,6 @@ const bcrypt = require('bcrypt')
 const db = require('../modules/db')
 const config = require('../modules/config')
 
-
 /**
  * Variables
  */
@@ -62,7 +61,6 @@ router.post("/login", function (req, res, next) {
                                 exp: exp
                             }, process.env.JWT_SECRET, (err, token) => {
                                 if (err) {
-                                    console.log(err)
                                     res.status(500).json({
                                         success: false,
                                         error: "error during token signing"

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "cross-env NODE_ENV=test mocha",
     "start": "node index.js",
     "dev": "cross-env NODE_ENV=development nodemon index.js"
   },
@@ -20,8 +20,14 @@
     "pg": "^7.14.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/chai-http": "4.2.0",
+    "@types/mocha": "5.2.7",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "cross-env": "^6.0.0",
+    "mocha": "^6.2.2",
     "nodemon": "^1.19.2",
-    "mocha": "^6.2.2"
+    "tslint-config-airbnb": "5.11.2"
   }
 }

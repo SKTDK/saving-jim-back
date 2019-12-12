@@ -6,6 +6,9 @@ const {
 } = require('pg')
 
 
+if(process.env.NODE_ENV === "test"){
+    require("dotenv").config("/../.env");
+}
 
 /**
  * Connection pool

@@ -12,21 +12,21 @@ const config = require('../modules/config')
 
 const saltRounds = process.env.SALT_BCRYPT || 10
 
+
 router.post("/addUser", function (req, res, next) {
 
     var accountType = req.body.accountType;
-    var firstname = req.body.username;
-    var lastname = req.body.username;
+    var firstname = req.body.firstname;
+    var lastname = req.body.lastname;
     var username = req.body.username;
     var password = req.body.password;
-
+    
     var payload = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
-
     // Checking if data is valid before sending it to remote DB server
-    if (accountType === '0' || accountType === '1' || accountType === '2' || accountType === '3') {
+    if (accountType < 0 || accountType > 3) {
         res.status(412).json({
             success: false,
-            error: "Wrong data sent! (1)"
+            error: "Wrong data sent!"
         })
         return
     }
@@ -61,7 +61,7 @@ router.post("/addUser", function (req, res, next) {
     if (!firstname || !lastname || !username || !password) {
         res.status(412).json({
             success: false,
-            error: "Wrong data sent! (2)"
+            error: "Wrong data sent!"
         })
         return
     }
@@ -112,8 +112,6 @@ router.post("/usersByAccountType", function (req, res, next) {
 
     var accountType = req.body.accountType;
     var payload = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
-
-
 
     // Checking if data is valid before sending it to remote DB server
     if (accountType === '0' || accountType === '1' || accountType === '2' || accountType === '3') {

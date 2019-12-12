@@ -63,3 +63,4 @@ var start = function (callback) {
  * Exports
  */
 exports.start = start
+exports.app = app
