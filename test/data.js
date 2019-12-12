@@ -1,3 +1,5 @@
+//Data for tests
+
 const admin = {
     id:1,
     username: "admin",

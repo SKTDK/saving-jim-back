@@ -12,7 +12,7 @@ const assert = chai.assert;
 const data = require('./data');
 
 
-describe('Integration Test case of login in auth.js', () => {
+describe('Test cases of login in auth.js', () => {
 
     it('username missing', () => {
         chai.request(server.app).post("/login").send({

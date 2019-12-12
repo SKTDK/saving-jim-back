@@ -8,12 +8,8 @@ const authMiddleware = require('./middlewares').authMiddleware
 const loggerMiddleware = require('./middlewares').loggerMiddleware
 const authRouter = require('../routes/auth')
 const usersRouter = require('../routes/users')
-const galleryRouter = require('../routes/gallery')
-const quotesRouter = require('../routes/quotes')
 const accountsRouter = require('../routes/accounts')
 const gameRouter = require("../routes/games")
-// TEST PGSQL
-const testRouter = require('../routes/test')
 
 /**
  * Variables
@@ -34,8 +30,7 @@ app.use(loggerMiddleware)
 app.use(bodyParser.json({
     limit: "1.1MB"
 }));
-// TEST PGSQL
-app.use('/test', testRouter)
+
 // Configure routes
 app.use(authRouter)
 app.use(usersRouter)
@@ -44,8 +39,6 @@ app.use(gameRouter);
 // Secure the API
 app.use(authMiddleware)
 // Other routes
-app.use('/gallery', galleryRouter)
-app.use('/quotes', quotesRouter)
 app.use('/accounts', accountsRouter)
 
 
