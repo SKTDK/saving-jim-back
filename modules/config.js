@@ -1,5 +1,5 @@
 // Regex for sanitizing inputs to prevent SQL injection
-const REGEX_USERNAME = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/i;
+const REGEX_USERNAME = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]|[0-9]+$/i;
 const REGEX_PASSWORD = /^([0-9]|[a-z]|[A-Z]|[!$.@#;:,])+$/i;
 const REGEX_NAME = /^([0-9]|[a-z]|[A-Z])+$/i;
 
