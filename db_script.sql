@@ -133,28 +133,28 @@ INSERT INTO savingjim.users (id, account_type, first_name, last_name, username, 
 VALUES (DEFAULT, 0, 'admin','admin', 'admin', '$2a$04$7imHLhVTFYzFp4B7NC3Ku.GpXlJA8gMiwy.Gg2ktVVaEEwwYRq16q',true, NULL, NULL, 0);
 
 INSERT INTO savingjim.users (id, account_type, first_name, last_name, username, password, active, modified_on, modified_by, version)
-VALUES (DEFAULT, 1, 'worker1','worker1', 'worker1', '$2a$04$d2tpvGfYdrC.iezqR8epeuvY.ARYokCcIR0JYtl4IY9xbRGe7d6Kq',true, NULL, NULL, 0);
+VALUES (DEFAULT, 1, 'Marc','Grandhenry', 'marc', '$2a$04$d2tpvGfYdrC.iezqR8epeuvY.ARYokCcIR0JYtl4IY9xbRGe7d6Kq',true, NULL, NULL, 0);
 
 INSERT INTO savingjim.users (id, account_type, first_name, last_name, username, password, active, modified_on, modified_by, version)
-VALUES (DEFAULT, 1, 'worker2','worker2', 'worker2', '$2a$04$CKwAXJKBawdsJJAJEikBYOmanXzqEzecGjJ0P0YL/3boq/V3WAij6',true, NULL, NULL, 0);
+VALUES (DEFAULT, 1, 'Caroline','Dubaere', 'caroline', '$2a$04$CKwAXJKBawdsJJAJEikBYOmanXzqEzecGjJ0P0YL/3boq/V3WAij6',true, NULL, NULL, 0);
 
 INSERT INTO savingjim.users (id, account_type, first_name, last_name, username, password, active, modified_on, modified_by, version)
-VALUES (DEFAULT, 2, 'contact1','contact1', 'contact1', '$2a$04$lFZaw1tvKVZw3k2utNN7E.dTreJO4DN6.CgcJnaS85lwIp6ezyzD2',true, NULL, NULL, 0);
+VALUES (DEFAULT, 2, 'Suyeon','Park', 'contact1', '$2a$04$lFZaw1tvKVZw3k2utNN7E.dTreJO4DN6.CgcJnaS85lwIp6ezyzD2',true, NULL, NULL, 0);
 
 INSERT INTO savingjim.users (id, account_type, first_name, last_name, username, password, active, modified_on, modified_by, version)
-VALUES (DEFAULT, 2, 'contact2','contact2', 'contact2', '$2a$04$N/HtODk2CwmEN6M9nqRxFeKfnWzVr3Gs6bljHz1J5eUsWhyrcjwo2',true, NULL, NULL, 0);
+VALUES (DEFAULT, 2, 'Martin','Hennen', 'contact2', '$2a$04$N/HtODk2CwmEN6M9nqRxFeKfnWzVr3Gs6bljHz1J5eUsWhyrcjwo2',true, NULL, NULL, 0);
 
 INSERT INTO savingjim.users (id, account_type, first_name, last_name, username, password, active, modified_on, modified_by, version)
-VALUES (DEFAULT, 2, 'contact3','contact3', 'contact3', '$2a$04$wn3zhnmjUy6l6guWrh7Py.DSypTNGOThJtLLYOgTIR.RzfH43PQeW',true, NULL, NULL, 0);
+VALUES (DEFAULT, 2, 'Adam','Hennen', 'contact3', '$2a$04$wn3zhnmjUy6l6guWrh7Py.DSypTNGOThJtLLYOgTIR.RzfH43PQeW',true, NULL, NULL, 0);
 
 INSERT INTO savingjim.users (id, account_type, first_name, last_name, username, password, active, modified_on, modified_by, version)
-VALUES (DEFAULT, 3, 'child1','child1', 'child1', '$2a$04$Ggy.l4lYmt8.nNCGtL3aOewqO2gHUb5SYRqqoMf6MfBYeFMdTfb/K',true, NULL, NULL, 0);
+VALUES (DEFAULT, 3, 'Cyril','Hennen', 'cyril', '$2a$04$Ggy.l4lYmt8.nNCGtL3aOewqO2gHUb5SYRqqoMf6MfBYeFMdTfb/K',true, NULL, NULL, 0);
 
 INSERT INTO savingjim.users (id, account_type, first_name, last_name, username, password, active, modified_on, modified_by, version)
-VALUES (DEFAULT, 3, 'child2','child2', 'child2', '$2a$04$sa8GBlmsbSrX1.fhnhQaMuxTMORDz7pYDckZ7X6L3geiXriPT7OoC',true, NULL, NULL, 0);
+VALUES (DEFAULT, 3, 'Marcin','Krasowski', 'marcin', '$2a$04$sa8GBlmsbSrX1.fhnhQaMuxTMORDz7pYDckZ7X6L3geiXriPT7OoC',true, NULL, NULL, 0);
 
 INSERT INTO savingjim.users (id, account_type, first_name, last_name, username, password, active, modified_on, modified_by, version)
-VALUES (DEFAULT, 3, 'child3','child3', 'child3', '$2a$04$y5LSpEC7tnmmoXqtnxHE3.JEAZ3r4e38mqXE6Af2IvqzN.Am1fmDa',true, NULL, NULL, 0);
+VALUES (DEFAULT, 3, 'Gauthier','Grandhenry', 'gauthier', '$2a$04$y5LSpEC7tnmmoXqtnxHE3.JEAZ3r4e38mqXE6Af2IvqzN.Am1fmDa',true, NULL, NULL, 0);
  
 /*
  * Contacts insert. 3 contacts
