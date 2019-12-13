@@ -669,7 +669,7 @@ router.post("/searchByPersonOfContact", function (req, res, next) {
 
     db.db
         .query(
-            "SELECT DISTINCT u.id, u.account_type, u.first_name, u.last_name, u.username, u.active, u.modified_on, u.modified_by, u.version FROM savingjim.users u, savingjim.persons_of_contact poc WHERE u.id=poc.child_id AND u.account_type=$1 AND poc.child_id=$2 LIMIT 100",
+            "SELECT DISTINCT u.id, u.account_type, u.first_name, u.last_name, u.username, u.active, u.modified_on, u.modified_by, u.version FROM savingjim.users u, savingjim.persons_of_contact poc WHERE u.id=poc.child_id AND u.account_type=$1 AND poc.account_id=$2 LIMIT 100",
             [accountType, payload.user.id])
         .then(result => {
             if (result.rows[0]) {
