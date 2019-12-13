@@ -20,7 +20,7 @@ router.post("/addUser", function (req, res, next) {
     var lastname = req.body.lastname;
     var username = req.body.username;
     var password = req.body.password;
-    
+
     var payload = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
     // Checking if data is valid before sending it to remote DB server
     if (accountType < 0 || accountType > 3) {
@@ -626,4 +626,61 @@ router.post("/search", function (req, res, next) {
     return;
 });
 
+router.post("/searchByUser", function (req, res, next) {
+    var payload = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
+
+    // only looking for specific types
+    var accountType = req.body.accountType;
+    if (accountType !== parseInt(accountType, 10)) {
+        // wrong
+        res.status(500).send();
+        return;
+    }
+
+
+    db.db
+        .query(
+            "SELECT u.id, u.account_type, u.first_name, u.last_name, u.username, u.active, u.modified_on, u.modified_by, u.version FROM savingjim.users u, savingjim.persons_of_contact poc WHERE u.account_type=$1 AND poc.child_id=$2 LIMIT 100",
+            [accountType, payload.user.id])
+        .then(result => {
+            if (result.rows[0]) {
+                var body = result.rows;
+                res.setHeader("content-type", "application/json; charset=utf-8");
+                res.send(body);
+            } else {
+                res.status(500).json({});
+            }
+        })
+        .catch(e => console.error(e.stack));
+    return;
+});
+
+router.post("/searchByPersonOfContact", function (req, res, next) {
+    var payload = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
+
+    // only looking for specific types
+    var accountType = req.body.accountType;
+    if (accountType !== parseInt(accountType, 10)) {
+        // wrong
+        res.status(500).send();
+        return;
+    }
+
+
+    db.db
+        .query(
+            "SELECT u.id, u.account_type, u.first_name, u.last_name, u.username, u.active, u.modified_on, u.modified_by, u.version FROM savingjim.users u, savingjim.persons_of_contact poc WHERE u.id=poc.child_id AND u.account_type=$1 AND poc.account_id=$2 LIMIT 100",
+            [accountType, payload.user.id])
+        .then(result => {
+            if (result.rows[0]) {
+                var body = result.rows;
+                res.setHeader("content-type", "application/json; charset=utf-8");
+                res.send(body);
+            } else {
+                res.status(500).json({});
+            }
+        })
+        .catch(e => console.error(e.stack));
+    return;
+});
 module.exports = router;
